@@ -1,0 +1,15 @@
+{
+  "title": "Сторінка гравця",
+  "message.required": "Обов`язкове поле",
+  "button.save": "Зберегти",
+  "button.back": "Назад",
+  "button.create": "Створити",
+  "button.cancel" : "Скасувати",
+  "field.firstName": "Ім`я",
+  "field.lastName": "Прізвище",
+  "field.yearOfBirth": "Рік народження",
+  "field.position": "Позиція",
+  "field.team": "Команда",
+  "snackBar.message.success": "Гравця було створено",
+  "snackBar.message.error": "Сталася помилка. Спробуйте пізніше"
+}

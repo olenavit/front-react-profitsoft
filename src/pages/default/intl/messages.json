@@ -1,3 +1,13 @@
 {
-  "title": "This is the first page that visitors to your site will see, place all the information they need here"
+  "title": "This is the first page that visitors to your site will see, place all the information they need here",
+  "addPlayer": "Add player",
+  "search": "Search",
+  "searchByName": "Search by name",
+  "searchBySurname": "Search by surname",
+  "rowsPerPage": "Players per page",
+  "messages.deletePlayerConfirmation": "Are you sure you want to delete player?",
+  "messages.error": "Error. Try again later",
+  "messages.successDeleted": "Player was successfully deleted",
+  "button.cancel": "NO",
+  "button.accept": "YES"
 }
