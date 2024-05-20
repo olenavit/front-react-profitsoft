@@ -13,6 +13,7 @@ import {useNavigate, useParams} from "react-router-dom";
 import {useIntl} from "react-intl";
 import actionPlayer, {MOCK_USER_LIST_RESPONSE} from "../../app/actions/player";
 import {useDispatch, useSelector} from "react-redux";
+import axios from "axios";
 
 const PlayerCard = () => {
     const [name, setName] = useState('');
@@ -20,7 +21,6 @@ const PlayerCard = () => {
     const [yearOfBirth, setYearOfBirth] = useState('');
     const [position, setPosition] = useState('');
     const [isEdit, setIsEdit] = useState(false);
-    const [isSuccessCall, setIsSuccessCall] = useState(true);
     const [isShowMessage, setShowMessage] = useState(false);
     const [isCreate, setIsCreate] = useState(false);
     const navigate = useNavigate();
@@ -29,7 +29,6 @@ const PlayerCard = () => {
     let {id} = useParams();
 
     const {
-        isCreating,
         isSuccessCreated,
         createdPlayer
     } = useSelector(({player}) => player);
@@ -55,11 +54,13 @@ const PlayerCard = () => {
         setIsEdit(true);
     }
 
-    useEffect(()=>{
-        if(isSuccessCreated) {
+    useEffect(() => {
+        if (isSuccessCreated) {
             navigate(`/player/${createdPlayer?.id}`)
+            setIsEdit(false)
         }
     }, [isSuccessCreated])
+
 
 
     useEffect(() => {
@@ -70,9 +71,11 @@ const PlayerCard = () => {
             return
         }
 
-        fetch(`http://localhost:8080/api/player/${id}`)
-            .then((res) => {
-                return res.json();
+        axios.get(`http://localhost:8080/api/player/${id}`)
+            .catch(() => {
+                return MOCK_USER_LIST_RESPONSE.list?.find((player) => {
+                   return player?.id.toString() === id
+               })
             })
             .then((data) => {
                 const {
@@ -86,26 +89,6 @@ const PlayerCard = () => {
                 setYearOfBirth(yearOfBirth);
                 setPosition(position);
                 setIsEdit(false);
-            })
-            .catch(() => {
-                const player = MOCK_USER_LIST_RESPONSE.list?.find((player) => {
-                    console.log('player', player)
-                    console.log('player id', player.id)
-                    console.log('id', id)
-                    return player?.id.toString() === id
-                });
-                console.log('player returt', player)
-                const {
-                    name,
-                    surname,
-                    yearOfBirth,
-                    position
-                } = player
-
-                setName(name);
-                setSurname(surname);
-                setYearOfBirth(yearOfBirth);
-                setPosition(position);
             })
 
     }, [id]);
@@ -136,7 +119,7 @@ const PlayerCard = () => {
         navigate(0)
     }
 
-    const validateForm =()=>{
+    const validateForm = () => {
         const values = {
             name: name,
             surname: surname,
@@ -158,55 +141,13 @@ const PlayerCard = () => {
 
     }
 
-    const onSave = () => {
-        if(!validateForm()){
-            return
-        }
-
-        const method = id === "new" ? "POST" : "PUT";
-
-        const urlParam = id === "new" ? "" : `/${id}`
-
-        fetch(`http://localhost:8080/api/player${urlParam}`, {
-            method: method,
-            headers: {
-                "Content-Type": "application/json"
-            },
-            // body: JSON.stringify(values)
-        }).then((res) => {
-            if (res.status === 200 || res.status === 201) {
-                console.log('res create', res)
-                return res.json()
-            }
-
-        }).catch(() => {
-            const player = MOCK_USER_LIST_RESPONSE.list?.find((player) => {
-                return player?.id.toString() === id
-            });
-            const {
-                idPlayer,
-                name,
-                surname,
-                yearOfBirth,
-                position
-            } = player
-
-            setName(name);
-            setSurname(surname);
-            setYearOfBirth(yearOfBirth);
-            setPosition(position);
-            navigate(`/player/${idPlayer}`)
-        }).then(({id}) => {
-            navigate(`/player/${id}`)
-        })
-
-    }
 
     const onCreate = () => {
-        if(!validateForm()){
+        if (!validateForm()) {
             return
         }
-        dispatch(actionPlayer.fetchCreatePlayer({id,name,surname,yearOfBirth,position}))
+        dispatch(actionPlayer.fetchCreatePlayer({id, name, surname, yearOfBirth, position}))
+        setShowMessage(true)
     }
 
 
@@ -216,11 +157,12 @@ const PlayerCard = () => {
                               onClose={handleClose}>{formatMessage({id: 'snackBar.message.error'})}</SnackBar>)
 
         }
-        if (status) {
+        if (isCreate) {
             return (<SnackBar open={isOpen} severity="success"
-                              onClose={handleClose}>{formatMessage({id: 'snackBar.message.success'})}</SnackBar>)
+                              onClose={handleClose}>{formatMessage({id: 'snackBar.message.created'})}</SnackBar>)
         }
-
+        return (<SnackBar open={isOpen} severity="success"
+                          onClose={handleClose}>{formatMessage({id: 'snackBar.message.updated'})}</SnackBar>)
     }
 
     const handleClose = () => {
@@ -233,29 +175,30 @@ const PlayerCard = () => {
 
     return (
         <div>
-            {renderSnackBar(isSuccessCall, isShowMessage)}
+            {renderSnackBar(isSuccessCreated, isShowMessage)}
             <Button size="small" onClick={onReturn}>{formatMessage({id: 'button.back'})}</Button>
             <Card sx={{maxWidth: 345}}>
-                <CardContent>
-                    <Grid container justifyContent="flex-end">
-                        <IconButton onClick={handleEdit}>
-                            <EditIcon/>
-                        </IconButton>
-                    </Grid>
-                    <Typography gutterBottom variant="h5" component="div">
-                        <TextField onChange={handleName} label={formatMessage({id: 'field.firstName'})} value={name}/>
-                        {errors.name && errorMessages.required}
-                        <TextField onChange={handleSurname} label={formatMessage({id: 'field.lastName'})}
-                                   value={surname}/>
-                        {errors.surname && errorMessages.required}
-                        <TextField onChange={handleYearOfBirth} label={formatMessage({id: 'field.yearOfBirth'})}
-                                   value={yearOfBirth}/>
-                        {errors.yearOfBirth && errorMessages.required}
-                        <TextField onChange={handlePosition} label={formatMessage({id: 'field.position'})}
-                                   value={position}/>
-                        {errors.position && errorMessages.required}
-                    </Typography>
-                </CardContent>
+                    <CardContent>
+                        <Grid container justifyContent="flex-end">
+                            <IconButton onClick={handleEdit}>
+                                <EditIcon/>
+                            </IconButton>
+                        </Grid>
+                        <Typography gutterBottom variant="h5" component="div">
+                            <TextField onChange={handleName} label={formatMessage({id: 'field.firstName'})} value={name}/>
+                            {errors.name && errorMessages.required}
+                            <TextField onChange={handleSurname} label={formatMessage({id: 'field.lastName'})}
+                                       value={surname}/>
+                            {errors.surname && errorMessages.required}
+                            <TextField onChange={handleYearOfBirth} label={formatMessage({id: 'field.yearOfBirth'})}
+                                       value={yearOfBirth}/>
+                            {errors.yearOfBirth && errorMessages.required}
+                            <TextField onChange={handlePosition} label={formatMessage({id: 'field.position'})}
+                                       value={position}/>
+                            {errors.position && errorMessages.required}
+                        </Typography>
+                    </CardContent>
+
 
                 {isEdit &&
                     <CardActions>

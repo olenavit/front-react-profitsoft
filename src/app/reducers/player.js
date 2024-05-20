@@ -1,6 +1,4 @@
 import {
-    FILTER,
-    PAGINATION,
     RECEIVE_PLAYERS,
     REQUEST_PLAYERS,
     REQUEST_DELETE_PLAYER,
@@ -12,46 +10,19 @@ import {
 } from "../constants/actionTypes";
 
 const initialState ={
-    pagination:{
-        page:0,
-        size:3
-    },
-    filter:{
-        name:"",
-        surname:""
-    },
     players:[],
     isFetchingPlayers: false,
     isDeleting:false,
     isSuccessDeleted:false,
     isCreating: false,
     isSuccessCreated: false,
-    createdPlayer:{}
+    createdPlayer:{},
 }
 
 
 
 export default function PlayerReducer(state=initialState,action){
     switch(action.type){
-        case PAGINATION:{
-            return{
-                ...state,
-                pagination:{
-                    page: action.payload.page,
-                    size: action.payload.size
-                }
-            }
-        }
-        case FILTER:{
-            return{
-                ...state,
-                filter:{
-                    name: action.payload.name,
-                    surname: action.payload.surname
-                }
-            }
-        }
-
         case REQUEST_PLAYERS:{
             return{
                 ...state,

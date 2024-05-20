@@ -29,11 +29,9 @@ function Default() {
     const {
         players,
         isFetchingPlayers,
-        isDeleting,
         isSuccessDeleted
     } = useSelector(({player}) => player);
 
-    const state = useSelector(({player}) => player);
 
     const handleChangePage = (
         event: React.MouseEvent<HTMLButtonElement> | null,

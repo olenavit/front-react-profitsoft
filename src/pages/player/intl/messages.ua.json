@@ -10,6 +10,7 @@
   "field.yearOfBirth": "Рік народження",
   "field.position": "Позиція",
   "field.team": "Команда",
-  "snackBar.message.success": "Гравця було створено",
+  "snackBar.message.created": "Гравця було створено",
+  "snackBar.message.updated": "Гравця було оновлено",
   "snackBar.message.error": "Сталася помилка. Спробуйте пізніше"
 }

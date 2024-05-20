@@ -10,6 +10,7 @@
   "field.yearOfBirth": "Year of birth",
   "field.position": "Position",
   "field.team": "Team",
-  "snackBar.message.success": "Player was successfully saved",
+  "snackBar.message.created": "Player was successfully created",
+  "snackBar.message.updated": "Player was successfully updated",
   "snackBar.message.error": "Error. Try again later"
 }

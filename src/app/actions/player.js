@@ -1,6 +1,4 @@
 import {
-    FILTER,
-    PAGINATION,
     RECEIVE_PLAYERS,
     SUCCESS_DELETE_PLAYER,
     REQUEST_PLAYERS,
@@ -10,7 +8,6 @@ import {
     SUCCESS_CREATE_PLAYER,
     ERROR_CREATE_PLAYER
 } from "../constants/actionTypes";
-import storage, {keys} from "../../misc/storage";
 import config from "../../config";
 import axios from "axios";
 
@@ -20,21 +17,21 @@ const playerList = [{
     "id": 1,
     "name": "Jayson",
     "surname": "Tatum",
-    "year_of_birth": 1998,
+    "yearOfBirth": 1998,
     "position": "shooter, power forward",
 },
     {
         "id": 2,
         "name": "Kristaps",
         "surname": "Porzingis",
-        "year_of_birth": 1995,
+        "yearOfBirth": 1995,
         "position": "shooter, power forward",
     },
     {
         "id": 3,
         "name": "Josh",
         "surname": "Hart",
-        "year_of_birth": 1995,
+        "yearOfBirth": 1995,
         "position": "small forward",
     }]
 
@@ -43,23 +40,6 @@ export const MOCK_USER_LIST_RESPONSE = {
     list: playerList,
     totalPages: 1,
     totalElements: playerList.length
-}
-
-
-const setPagination = (pagination) => {
-    storage.setItem(keys.PAGINATION, JSON.stringify(pagination))
-    return {
-        type: PAGINATION,
-        payload: pagination
-    }
-}
-
-const setFilter = (filter) => {
-    storage.setItem(keys.FILTER, JSON.stringify(filter))
-    return {
-        type: FILTER,
-        payload: filter
-    }
 }
 
 const requestPlayers = () => ({
@@ -104,7 +84,7 @@ const fetchPlayers = ({
         .then((res) => {
             return res;
         })
-        .catch((err) => {
+        .catch(() => {
             // TODO: Mocked '.catch()' section
             return MOCK_USER_LIST_RESPONSE;
         }).then((players) => {
@@ -114,13 +94,7 @@ const fetchPlayers = ({
 
 
 const deletePlayer = (id) => {
-    return fetch(`${PLAYER_SERVICE}/api/player/${id}`, {
-        method: "DELETE"
-    })
-    // return axios.delete(`${PLAYER_SERVICE}/api/player/${id}`).then(res=>{
-    //     console.log('axios res',res)
-    //     return res
-    // })
+    return axios.delete(`${PLAYER_SERVICE}/api/player/${id}`)
 }
 
 const requestDeletePlayer = () => ({
@@ -138,18 +112,31 @@ const errorDeletePlayer = () => ({
 
 const fetchDeletePlayer = (id) => (dispatch) => {
     dispatch(requestDeletePlayer())
-    return deletePlayer(id).then((res) => {
-        console.log('res', res)
-        if (res.ok) {
-            dispatch(successDeletePlayer())
-        } else {
+    return deletePlayer(id)
+        .catch(() => {
+            // TODO: Mocked '.catch()' section
+            for (let i = 0; i < playerList.length; i++) {
+                if (playerList[i].id === id) {
+                    playerList.splice(i, 1)
+                    return {
+                        ok: true
+                    }
+                }
+            }
+
+            return {
+                ok: false
+            }
+        })
+        .then((res) => {
+            if (res.ok) {
+                dispatch(successDeletePlayer())
+            } else {
+                dispatch(errorDeletePlayer())
+            }
+        }).catch(() => {
             dispatch(errorDeletePlayer())
-        }
-    }).catch((err) => {
-        // TODO: Mocked '.catch()' section
-        console.error(err);
-        dispatch(errorDeletePlayer())
-    })
+        })
 
 }
 
@@ -206,6 +193,31 @@ const fetchCreatePlayer = ({
         surname,
         yearOfBirth,
         position
+    }).catch((err) => {
+        if (id !== "new") {
+            for (let i = 0; i < playerList.length; i++) {
+                if (playerList[i].id == id) {
+                    playerList[i] = {
+                        id,
+                        name,
+                        surname,
+                        yearOfBirth,
+                        position
+                    }
+                    return playerList[i]
+                }
+            }
+            return {}
+        }
+        playerList.push({
+            id: playerList.length+1,
+            name,
+            surname,
+            yearOfBirth,
+            position
+        })
+
+        return playerList[playerList.length-1];
     })
         .then((res) => {
             if (res) {
@@ -213,21 +225,16 @@ const fetchCreatePlayer = ({
             } else {
                 dispatch(errorCreatePlayer())
             }
-        }).catch((err) => {
-            // TODO: Mocked '.catch()' section
-            console.error(err);
+        }).catch(() => {
             dispatch(errorCreatePlayer())
         })
 
 }
 
-
 const exportFunctions = {
-    setPagination,
-    setFilter,
     fetchPlayers,
     fetchDeletePlayer,
-    fetchCreatePlayer
+    fetchCreatePlayer,
 }
 
 export default exportFunctions;
