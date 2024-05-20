@@ -1,0 +1,16 @@
+{
+  "title": "Player page",
+  "message.required": "Required",
+  "button.save": "Save",
+  "button.back": "Back",
+  "button.create": "Create",
+  "button.cancel" : "Cancel",
+  "field.firstName": "First Name",
+  "field.lastName": "Last Name",
+  "field.yearOfBirth": "Year of birth",
+  "field.position": "Position",
+  "field.team": "Team",
+  "snackBar.message.created": "Player was successfully created",
+  "snackBar.message.updated": "Player was successfully updated",
+  "snackBar.message.error": "Error. Try again later"
+}

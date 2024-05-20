@@ -1,3 +1,13 @@
 {
-  "title": "Це перша сторінка, яку побачать відвідувачі вашого сайту, розмістіть тут усю необхідну для них інформацію"
+  "title": "Це перша сторінка, яку побачать відвідувачі вашого сайту, розмістіть тут усю необхідну для них інформацію",
+  "addPlayer": "Додати гравця",
+  "search": "Пошук",
+  "searchByName": "Пошук за ім`ям",
+  "searchBySurname": "Пошук за фаміліею",
+  "rowsPerPage": "Кількість гравців на сторінці",
+  "messages.deletePlayerConfirmation": "Бажаєте видалити цього гравця?",
+  "messages.error": "Error. Try again later",
+  "messages.successDeleted": "Player was successfully deleted",
+  "button.cancel": "НІ",
+  "button.accept": "ТАК"
 }
